@@ -9,6 +9,8 @@ import Products from "./pages/Products";
 import Register from "./pages/Register";
 import ErrorPage from "./pages/ErrorPage";
 import NavBar from "./components/NavBar";
+import ProductDetails from "./components/ProductDetails";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
     const [user, setUser] = useState({ fullName: null, userId: null, isAdmin: null });
@@ -49,7 +51,6 @@ function App() {
 
         fetchUserData();
     }, []);
-    console.log(user);
 
     return (
         <>
@@ -62,7 +63,13 @@ function App() {
                             <Route path='/login' element={<Login />} />
                             <Route path='/logout' element={<Logout />} />
                             <Route path='/products' element={<Products />} />
+                            <Route
+                                path='/products/:productId'
+                                element={<ProductDetails />}
+                            />
+
                             <Route path='/register' element={<Register />} />
+                            <Route path='/users/admin' element={<AdminDashboard />} />
                             <Route path='/*' element={<ErrorPage />} />
                         </Routes>
                     </Container>
