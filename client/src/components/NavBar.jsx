@@ -33,6 +33,7 @@ function Navigationbar() {
             setSearch("");
         } else {
             navigate(`products/${product._id}`);
+            setSearch("");
         }
     }
     function showLoginAlert() {

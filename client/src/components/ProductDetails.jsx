@@ -1,6 +1,6 @@
 import userContext from "../UserContext";
 import { useContext, useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { Container, Card, Button, Row, Col } from "react-bootstrap";
 
 const ProductDetails = () => {
@@ -11,7 +11,6 @@ const ProductDetails = () => {
         fetch(`${process.env.REACT_APP_APP_URL}/products/${productId}`)
             .then((res) => res.json())
             .then((data) => {
-                console.log(data);
                 setProducts(data.product);
             });
     }, [productId]);

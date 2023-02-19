@@ -1,10 +1,8 @@
-import userContext from "../UserContext";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, Image, Row, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 const Products = () => {
-    const { user } = useContext(userContext);
     const [products, setProducts] = useState([]);
 
     useEffect(() => {

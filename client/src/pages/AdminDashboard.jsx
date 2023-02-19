@@ -11,14 +11,6 @@ const AdminDashboard = () => {
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedProduct, setSelectedProduct] = useState(null);
-
-    useEffect(() => {
-        fetch(`${process.env.REACT_APP_APP_URL}/products/all`)
-            .then((res) => res.json())
-            .then((data) => {
-                setProducts(data.product);
-            });
-    }, []);
     const totalPages = Math.ceil(products.length / PAGE_SIZE);
     const start = (currentPage - 1) * PAGE_SIZE;
     const end = start + PAGE_SIZE;
@@ -28,7 +20,7 @@ const AdminDashboard = () => {
         setCurrentPage(page);
     };
 
-    function handleProductNameChange(product, event) {
+    function updateProductName(product, event) {
         const newProductName = event.target.value;
         setProducts((prevState) =>
             prevState.map((p) =>
@@ -37,7 +29,7 @@ const AdminDashboard = () => {
         );
     }
 
-    function handleProductDescriptionChange(product, event) {
+    function updateProductDescription(product, event) {
         const newProductDescription = event.target.value;
         setProducts((prevState) =>
             prevState.map((p) =>
@@ -48,7 +40,7 @@ const AdminDashboard = () => {
         );
     }
 
-    function handleStockCountChange(product, event) {
+    function updateStockCount(product, event) {
         const newStockCount = parseInt(event.target.value, 10);
         setProducts((prevState) =>
             prevState.map((p) =>
@@ -57,7 +49,7 @@ const AdminDashboard = () => {
         );
     }
 
-    function handleProductPriceChange(product, event) {
+    function updateProductPrice(product, event) {
         const newProductPrice = parseInt(event.target.value, 10);
         setProducts((prevState) =>
             prevState.map((p) =>
@@ -86,6 +78,68 @@ const AdminDashboard = () => {
             return data;
         } else {
             throw new Error(data.message);
+        }
+    }
+    async function archive(id) {
+        try {
+            const updates = {
+                isActive: false,
+            };
+
+            const res = await updateProduct(id, updates);
+            console.log(res);
+            if (res.message) {
+                await Swal.fire({
+                    title: "Product archived",
+                    icon: "success",
+                    text: `Archived successfully`,
+                });
+                window.location.reload(false);
+            } else {
+                Swal.fire({
+                    title: "Error",
+                    icon: "error",
+                    text: "There was an error updating the product",
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                title: "Error",
+                icon: "error",
+                text: error.message,
+            });
+            console.log(error);
+        }
+    }
+    async function unArchive(id) {
+        try {
+            const updates = {
+                isActive: true,
+            };
+
+            const res = await updateProduct(id, updates);
+            console.log(res);
+            if (res.message) {
+                await Swal.fire({
+                    title: "Product archived",
+                    icon: "success",
+                    text: `Unarchived successfully`,
+                });
+                window.location.reload(false);
+            } else {
+                Swal.fire({
+                    title: "Error",
+                    icon: "error",
+                    text: "There was an error updating the product",
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                title: "Error",
+                icon: "error",
+                text: error.message,
+            });
+            console.log(error);
         }
     }
 
@@ -127,6 +181,58 @@ const AdminDashboard = () => {
             console.log(error);
         }
     }
+    const deleteProduct = async (id) => {
+        const result = await Swal.fire({
+            title: "Are you sure you want to delete this product?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!",
+        });
+
+        if (result.isConfirmed) {
+            try {
+                const res = await fetch(
+                    `${process.env.REACT_APP_APP_URL}/products/${id}/delete`,
+                    {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                            "X-Is-Admin": user.isAdmin ? "true" : "false",
+                        },
+                    }
+                );
+
+                if (res.ok) {
+                    await Swal.fire({
+                        title: "Product deleted",
+                        icon: "success",
+                        text: res.message,
+                    });
+                    window.location.reload(false);
+                } else {
+                    Swal.fire({
+                        title: "Error",
+                        icon: "error",
+                        text: "There was an error updating the product",
+                    });
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    };
+
+    useEffect(() => {
+        fetch(`${process.env.REACT_APP_APP_URL}/products/all`)
+            .then((res) => res.json())
+            .then((data) => {
+                setProducts(data.product);
+            });
+    }, []);
 
     return (
         <>
@@ -152,7 +258,7 @@ const AdminDashboard = () => {
                                         <input
                                             value={product.productName}
                                             onChange={(e) =>
-                                                handleProductNameChange(product, e)
+                                                updateProductName(product, e)
                                             }
                                         />
                                     </td>
@@ -161,7 +267,7 @@ const AdminDashboard = () => {
                                             type='text'
                                             value={product.productDescription}
                                             onChange={(e) =>
-                                                handleProductDescriptionChange(product, e)
+                                                updateProductDescription(product, e)
                                             }
                                         />
                                     </td>
@@ -169,16 +275,14 @@ const AdminDashboard = () => {
                                         <input
                                             type='number'
                                             value={product.stockCount}
-                                            onChange={(e) =>
-                                                handleStockCountChange(product, e)
-                                            }
+                                            onChange={(e) => updateStockCount(product, e)}
                                         />
                                     </td>
                                     <td>
                                         <input
                                             value={product.productPrice}
                                             onChange={(e) =>
-                                                handleProductPriceChange(product, e)
+                                                updateProductPrice(product, e)
                                             }
                                         />
                                     </td>
@@ -210,11 +314,17 @@ const AdminDashboard = () => {
                                     <td>Php {product.productPrice}</td>
                                     <td style={{ textAlign: "center" }}>
                                         {product.isActive ? (
-                                            <Button variant='outline-primary'>
+                                            <Button
+                                                onClick={() => archive(product._id)}
+                                                variant='outline-primary'
+                                            >
                                                 Archive
                                             </Button>
                                         ) : (
-                                            <Button variant='outline-warning'>
+                                            <Button
+                                                onClick={() => unArchive(product._id)}
+                                                variant='outline-warning'
+                                            >
                                                 Unarchive
                                             </Button>
                                         )}
@@ -230,7 +340,12 @@ const AdminDashboard = () => {
                                         >
                                             Update
                                         </Button>
-                                        <Button variant='outline-danger'>Delete</Button>
+                                        <Button
+                                            onClick={() => deleteProduct(product._id)}
+                                            variant='outline-danger'
+                                        >
+                                            Delete
+                                        </Button>
                                     </td>
                                 </>
                             )}
