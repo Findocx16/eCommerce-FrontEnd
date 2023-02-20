@@ -1,4 +1,3 @@
-// S52 Activity
 import { useState, useEffect, useContext } from "react";
 import { Form, Button, Container } from "react-bootstrap";
 
@@ -28,6 +27,7 @@ export default function Login() {
                 }),
             });
             const data = await response.json();
+
             if (typeof data.message !== "undefined") {
                 localStorage.setItem("token", data.message);
                 await retrieveUserDetails(data.message);
@@ -59,6 +59,7 @@ export default function Login() {
                 }
             );
             const data = await response.json();
+
             setUser({
                 fullName: `${data.user.firstName} ${data.user.lastName}`,
                 userId: data.user._id,

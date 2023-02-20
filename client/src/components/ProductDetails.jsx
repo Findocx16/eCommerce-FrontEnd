@@ -65,7 +65,12 @@ const ProductDetails = () => {
                         Log in to buy
                     </Button>
                 ) : (
-                    <Button variant='primary' size='lg' block>
+                    <Button
+                        disabled={user.isAdmin ? true : false}
+                        variant='primary'
+                        size='lg'
+                        block
+                    >
                         Add to cart
                     </Button>
                 )}

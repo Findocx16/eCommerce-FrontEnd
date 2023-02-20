@@ -1,6 +1,6 @@
 import ProductCards from "../components/ProductCards";
 
-export default function Home() {
+export default function Products() {
     return (
         <>
             <ProductCards />

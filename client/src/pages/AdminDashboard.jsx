@@ -4,16 +4,23 @@ import Button from "react-bootstrap/Button";
 import Swal from "sweetalert2";
 import userContext from "../UserContext";
 import { useContext } from "react";
+import AddProduct from "../components/AddProduct";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE_MANY = 10;
+const PAGE_SIZE_FEW = 5;
+
 const AdminDashboard = () => {
     const { user } = useContext(userContext);
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedProduct, setSelectedProduct] = useState(null);
-    const totalPages = Math.ceil(products.length / PAGE_SIZE);
-    const start = (currentPage - 1) * PAGE_SIZE;
-    const end = start + PAGE_SIZE;
+    const [addProduct, setAddProduct] = useState(false);
+
+    const totalPages = Math.ceil(
+        products.length / (!addProduct ? PAGE_SIZE_MANY : PAGE_SIZE_FEW)
+    );
+    const start = (currentPage - 1) * (!addProduct ? PAGE_SIZE_MANY : PAGE_SIZE_FEW);
+    const end = start + (!addProduct ? PAGE_SIZE_MANY : PAGE_SIZE_FEW);
     const currentProducts = products.slice(start, end);
 
     const handlePageClick = (page) => {
@@ -201,7 +208,6 @@ const AdminDashboard = () => {
                         headers: {
                             "Content-Type": "application/json",
                             "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                            "X-Is-Admin": user.isAdmin ? "true" : "false",
                         },
                     }
                 );
@@ -227,18 +233,34 @@ const AdminDashboard = () => {
     };
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_APP_URL}/products/all`)
+        fetch(`${process.env.REACT_APP_APP_URL}/products/all`, {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("token")}`,
+            },
+        })
             .then((res) => res.json())
             .then((data) => {
                 setProducts(data.product);
             });
     }, []);
 
+    function addProductButton(e) {
+        e.preventDefault();
+        if (addProduct) {
+            setAddProduct(false);
+        } else {
+            setAddProduct(true);
+        }
+    }
     return (
         <>
-            <Table striped bordered hover style={{ marginTop: "10vh" }}>
+            <h1 style={{ marginTop: "3vh" }} className='text-center'>
+                User Admin Dashboard
+            </h1>
+            <Table striped bordered hover style={{ marginTop: "5vh" }}>
                 <thead>
-                    <tr>
+                    <tr className='text-center'>
                         <th>#</th>
                         <th>Name</th>
                         <th>Description</th>
@@ -313,6 +335,26 @@ const AdminDashboard = () => {
                                     <td>{product.stockCount}</td>
                                     <td>Php {product.productPrice}</td>
                                     <td style={{ textAlign: "center" }}>
+                                        {product.isActive ? "Available" : "Unavailable"}
+                                    </td>
+                                    <td>
+                                        {new Date(product.createdOn).toLocaleString()}
+                                    </td>
+                                    <td style={{ textAlign: "center" }}>
+                                        <Button
+                                            variant='outline-primary'
+                                            style={{ marginRight: "10px" }}
+                                            onClick={() => setSelectedProduct(product)}
+                                        >
+                                            Update
+                                        </Button>
+                                        <Button
+                                            style={{ marginRight: "10px" }}
+                                            onClick={() => deleteProduct(product._id)}
+                                            variant='outline-danger'
+                                        >
+                                            Delete
+                                        </Button>
                                         {product.isActive ? (
                                             <Button
                                                 onClick={() => archive(product._id)}
@@ -328,24 +370,6 @@ const AdminDashboard = () => {
                                                 Unarchive
                                             </Button>
                                         )}
-                                    </td>
-                                    <td>
-                                        {new Date(product.createdOn).toLocaleString()}
-                                    </td>
-                                    <td style={{ textAlign: "center" }}>
-                                        <Button
-                                            variant='outline-primary'
-                                            style={{ marginRight: "10px" }}
-                                            onClick={() => setSelectedProduct(product)}
-                                        >
-                                            Update
-                                        </Button>
-                                        <Button
-                                            onClick={() => deleteProduct(product._id)}
-                                            variant='outline-danger'
-                                        >
-                                            Delete
-                                        </Button>
                                     </td>
                                 </>
                             )}
@@ -371,7 +395,16 @@ const AdminDashboard = () => {
                         </li>
                     ))}
                 </ul>
+                <Button
+                    onClick={(e) => addProductButton(e)}
+                    variant={!addProduct ? "primary" : "warning"}
+                    style={{ marginLeft: "auto" }}
+                >
+                    {!addProduct ? "Add product" : "Close form"}
+                </Button>
             </nav>
+
+            {!addProduct ? "" : <AddProduct />}
         </>
     );
 };
