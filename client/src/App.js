@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { UserProvider } from "./UserContext";
-import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Logout from "./pages/Logout";
 import Products from "./pages/Products";
@@ -51,7 +50,7 @@ function App() {
 
         fetchUserData();
     }, []);
-
+    console.log(user);
     return (
         <>
             <UserProvider value={{ user, setUser, unsetUser }}>
@@ -59,7 +58,6 @@ function App() {
                     <NavBar />
                     <Container>
                         <Routes>
-                            <Route path='/' element={<Home />} />
                             <Route path='/login' element={<Login />} />
                             <Route path='/logout' element={<Logout />} />
                             <Route path='/products' element={<Products />} />

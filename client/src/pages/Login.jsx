@@ -1,11 +1,12 @@
 import { useState, useEffect, useContext } from "react";
 import { Form, Button, Container } from "react-bootstrap";
 
-import { Navigate } from "react-router-dom";
+import { Navigate, Link, useNavigate } from "react-router-dom";
 import userContext from "../UserContext";
 import Swal from "sweetalert2";
 
 export default function Login() {
+    const navigate = useNavigate();
     const { user, setUser } = useContext(userContext);
 
     const [email, setEmail] = useState("");
@@ -16,7 +17,7 @@ export default function Login() {
     async function authenticate(e) {
         e.preventDefault();
         try {
-            const response = await fetch(`${process.env.REACT_APP_APP_URL}/users/login`, {
+            const res = await fetch(`${process.env.REACT_APP_APP_URL}/users/login`, {
                 method: "POST",
                 headers: {
                     "Content-type": "application/json",
@@ -26,17 +27,28 @@ export default function Login() {
                     password: password,
                 }),
             });
-            const data = await response.json();
+            const data = await res.json();
 
             if (typeof data.message !== "undefined") {
                 localStorage.setItem("token", data.message);
                 await retrieveUserDetails(data.message);
-            } else {
-                Swal.fire({
-                    title: "Authentication Failed",
+            }
+            if (res.status === 404) {
+                await Swal.fire({
+                    title: "User not found",
                     icon: "error",
-                    text: "Please, check your login details and try again.",
+                    text: "Please try to register first",
                 });
+                navigate("/register");
+                localStorage.clear();
+            }
+            if (res.status === 400) {
+                Swal.fire({
+                    title: "Something went wrong",
+                    icon: "error",
+                    text: data.message,
+                });
+                localStorage.clear();
             }
         } catch (error) {
             console.error("Authentication failed:", error);
@@ -50,29 +62,29 @@ export default function Login() {
 
     async function retrieveUserDetails(token) {
         try {
-            const response = await fetch(
-                `${process.env.REACT_APP_APP_URL}/users/details`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            const data = await response.json();
+            const res = await fetch(`${process.env.REACT_APP_APP_URL}/users/details`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const data = await res.json();
 
             setUser({
                 fullName: `${data.user.firstName} ${data.user.lastName}`,
                 userId: data.user._id,
                 isAdmin: data.user.isAdmin,
             });
-            Swal.fire({
-                title: "Login Successful",
-                icon: "success",
-                text: `Welcome back ${data.user.firstName}`,
-            });
 
-            setEmail("");
-            setPassword("");
+            if (res.ok) {
+                Swal.fire({
+                    title: "Login Successful",
+                    icon: "success",
+                    text: `Welcome back ${data.user.firstName}`,
+                });
+
+                setEmail("");
+                setPassword("");
+            }
         } catch (error) {
             console.error("Error fetching user details:", error);
         }
@@ -126,28 +138,39 @@ export default function Login() {
                             onChange={() => setShowPassword(!showPassword)}
                         />
                     </div>
-                </Form.Group>
 
-                {isActive ? (
-                    <Button
-                        className='py-2 px-4'
-                        variant='success'
-                        type='submit'
-                        id='submitBtn'
-                    >
-                        Submit
-                    </Button>
-                ) : (
-                    <Button
-                        className='py-2 px-4'
-                        variant='success'
-                        type='submit'
-                        id='submitBtn'
-                        disabled
-                    >
-                        Submit
-                    </Button>
-                )}
+                    <div className='text-center'>
+                        <Form.Text className='text-muted'>
+                            Don't have an account yet?{" "}
+                            <Link to={"/register"} className='text-decoration-none'>
+                                Click here
+                            </Link>{" "}
+                            to register.
+                        </Form.Text>
+                    </div>
+                </Form.Group>
+                <div className='text-center'>
+                    {isActive ? (
+                        <Button
+                            className='py-2 px-4'
+                            variant='success'
+                            type='submit'
+                            id='submitBtn'
+                        >
+                            Submit
+                        </Button>
+                    ) : (
+                        <Button
+                            className='py-2 px-4'
+                            variant='success'
+                            type='submit'
+                            id='submitBtn'
+                            disabled
+                        >
+                            Submit
+                        </Button>
+                    )}
+                </div>
             </Form>
         </Container>
     );

@@ -1,12 +1,22 @@
 import userContext from "../UserContext";
 import { useContext, useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Container, Card, Button, Row, Col } from "react-bootstrap";
+import { Container, Card, Button, Row, Col, Form } from "react-bootstrap";
+import Swal from "sweetalert2";
 
 const ProductDetails = () => {
     const { user } = useContext(userContext);
     const { productId } = useParams();
     const [products, setProducts] = useState("");
+    const [quantityNum, setQuantity] = useState(1);
+
+    const increment = () => setQuantity(quantityNum + 1);
+
+    const decrement = () => {
+        if (quantityNum > 0) {
+            setQuantity(quantityNum - 1);
+        }
+    };
     useEffect(() => {
         fetch(`${process.env.REACT_APP_APP_URL}/products/${productId}`)
             .then((res) => res.json())
@@ -14,6 +24,54 @@ const ProductDetails = () => {
                 setProducts(data.product);
             });
     }, [productId]);
+
+    async function addToCart() {
+        try {
+            const res = await fetch(
+                `${process.env.REACT_APP_APP_URL}/products/${productId}/addtocart`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                    body: JSON.stringify({
+                        quantity: quantityNum,
+                    }),
+                }
+            );
+            const data = await res.json();
+            if (res.status === 200) {
+                Swal.fire({
+                    title: "Success!",
+                    text: "Product added to cart.",
+                    icon: "success",
+                });
+            }
+            if (res.status === 400) {
+                Swal.fire({
+                    title: "Error",
+                    text: data.message,
+                    icon: "error",
+                });
+            }
+            if (res.status === 404) {
+                Swal.fire({
+                    title: "Not found 404",
+                    text: data.message,
+                    icon: "error",
+                });
+            }
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                title: "Error!",
+                text: "An error occurred. Please try again.",
+                icon: "error",
+            });
+        }
+    }
+
     return (
         <Container>
             <Row style={{ marginTop: "10vh" }}>
@@ -30,7 +88,7 @@ const ProductDetails = () => {
                                         src='https://drive.google.com/uc?id=1AffvkxJLC3MMuJPL6D_UoJ2oUKLtfED5'
                                     />
                                 </div>
-                                <div className='col-md-6 mt-5'>
+                                <div className='col-md-6 mt-3'>
                                     <Card.Text>
                                         <strong>Details: </strong>
                                         {products.productDescription}
@@ -47,6 +105,28 @@ const ProductDetails = () => {
                                         <strong>Total Sold Count: </strong>
                                         {products.soldCount}
                                     </Card.Text>
+                                    <Form.Group className='px-4 py-2'>
+                                        <div className='text-center'>
+                                            <Form.Label>
+                                                {" "}
+                                                <strong>Quantity</strong>
+                                            </Form.Label>
+                                        </div>
+                                        <div className='d-flex'>
+                                            <Button variant='danger' onClick={decrement}>
+                                                -
+                                            </Button>
+                                            <Form.Control
+                                                type='number'
+                                                value={quantityNum}
+                                                readOnly
+                                                className='text-center'
+                                            />
+                                            <Button variant='success' onClick={increment}>
+                                                +
+                                            </Button>
+                                        </div>
+                                    </Form.Group>
                                 </div>
                             </div>
                         </Card.Body>
@@ -66,8 +146,8 @@ const ProductDetails = () => {
                     </Button>
                 ) : (
                     <Button
+                        onClick={addToCart}
                         disabled={user.isAdmin ? true : false}
-                        variant='primary'
                         size='lg'
                         block
                     >

@@ -4,6 +4,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import userContext from "../UserContext";
 import { useContext } from "react";
 import Swal from "sweetalert2";
+import { AiOutlineShoppingCart } from "react-icons/ai";
 
 function Navigationbar() {
     const navigate = useNavigate();
@@ -36,34 +37,23 @@ function Navigationbar() {
             setSearch("");
         }
     }
-    function showLoginAlert() {
-        Swal.fire({
-            title: "Login first",
-            icon: "error",
-            text: "Please login first for better experience",
-        });
-    }
 
     return (
         <>
             <Navbar key={"md"} bg='light' expand={"md"} className='mb-3'>
                 <Container fluid>
-                    {user.userId ? (
-                        <Navbar.Brand as={Link} to='/'>
-                            EJAY
-                        </Navbar.Brand>
-                    ) : (
-                        <Navbar.Brand as={Link} to='/products' onClick={showLoginAlert}>
-                            EJAY
-                        </Navbar.Brand>
-                    )}
+                    <Navbar.Brand as={Link} to='/products'>
+                        EJAY
+                    </Navbar.Brand>
                     {user.isAdmin ? (
                         <Button variant='outline-danger' as={NavLink} to='/users/admin'>
                             ADMIN DASHBOARD
                         </Button>
-                    ) : (
-                        ""
-                    )}
+                    ) : user.userId ? (
+                        <Button variant='outline-success' as={NavLink} to='/users/cart'>
+                            VIEW CART <AiOutlineShoppingCart />
+                        </Button>
+                    ) : null}
 
                     <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${"md"}`} />
                     <Navbar.Offcanvas
@@ -78,19 +68,6 @@ function Navigationbar() {
                         </Offcanvas.Header>
                         <Offcanvas.Body>
                             <Nav className='justify-content-end flex-grow-1 pe-3'>
-                                {user.userId ? (
-                                    <Nav.Link as={NavLink} to='/'>
-                                        Home
-                                    </Nav.Link>
-                                ) : (
-                                    <Nav.Link
-                                        as={NavLink}
-                                        to='/products'
-                                        onClick={showLoginAlert}
-                                    >
-                                        Home
-                                    </Nav.Link>
-                                )}
                                 <Nav.Link as={NavLink} to='/products'>
                                     Products
                                 </Nav.Link>

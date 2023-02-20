@@ -1,9 +1,9 @@
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import province from "../data/AddressData";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import userContext from "../UserContext";
-import { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+
+import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
 function GridComplexExample() {
@@ -67,11 +67,12 @@ function GridComplexExample() {
                 requestOptions
             );
             if (res.ok) {
-                Swal.fire({
+                await Swal.fire({
                     title: "Successfully enrolled",
                     icon: "success",
-                    text: "You have successfully enrolled for this course.",
+                    text: "You have successfully registered",
                 });
+                navigate("/login");
             } else if (res.status === 401) {
                 Swal.fire({
                     title: "Duplicate email found",
@@ -257,10 +258,20 @@ function GridComplexExample() {
                         placeholder='Landmark'
                     />
                 </Form.Group>
-
-                <Button className='mt-3 px-5 py-2' variant='primary' type='submit'>
-                    Register
-                </Button>
+                <div className='text-center mt-3'>
+                    <Form.Text className='text-muted'>
+                        Already have an account?{" "}
+                        <Link to={"/login"} className='text-decoration-none'>
+                            Click here
+                        </Link>{" "}
+                        to log in.
+                    </Form.Text>
+                </div>
+                <div className='text-center mt-1'>
+                    <Button className='mt-3 px-5 py-2' variant='primary' type='submit'>
+                        Register
+                    </Button>
+                </div>
             </Form>
         </Container>
         // </div>
