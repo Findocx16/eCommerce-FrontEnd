@@ -73,6 +73,7 @@ export default function Login() {
                 fullName: `${data.user.firstName} ${data.user.lastName}`,
                 userId: data.user._id,
                 isAdmin: data.user.isAdmin,
+                email: data.user.email,
             });
 
             if (res.ok) {
