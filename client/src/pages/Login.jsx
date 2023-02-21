@@ -96,7 +96,7 @@ export default function Login() {
     }, [email, password]);
 
     return user.userId !== null ? (
-        <Navigate to='/products' />
+        <Navigate to='/' />
     ) : (
         <Container>
             <h1

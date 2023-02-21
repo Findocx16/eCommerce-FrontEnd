@@ -48,7 +48,7 @@ const ProductDetails = () => {
                     text: "Product added to cart.",
                     icon: "success",
                 });
-                navigate("/products");
+                navigate("/");
             }
             if (res.status === 400) {
                 Swal.fire({

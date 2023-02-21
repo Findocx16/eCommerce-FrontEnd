@@ -17,7 +17,7 @@ function GridComplexExample() {
                 icon: "error",
                 text: "Please logout to use another account",
             });
-            navigate("/products");
+            navigate("/");
         }
     });
 

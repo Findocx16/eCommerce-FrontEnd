@@ -37,7 +37,7 @@ const Products = () => {
                             key={product._id}
                             className='my-1 p-0 text-dark text-decoration-none text-center'
                             as={Link}
-                            to={`/products/${product._id}`}
+                            to={`${product._id}`}
                         >
                             <Card.Header
                                 style={{ backgroundColor: "orange", color: "#fff" }}

@@ -47,7 +47,7 @@ function Navigationbar() {
         <>
             <Navbar key={"md"} bg='light' expand={"md"} className='mb-3'>
                 <Container fluid>
-                    <Navbar.Brand as={Link} to='/products'>
+                    <Navbar.Brand as={Link} to='/'>
                         EJAY SHOPPING CENTER
                     </Navbar.Brand>
                     {user.isAdmin ? (
@@ -73,7 +73,7 @@ function Navigationbar() {
                         </Offcanvas.Header>
                         <Offcanvas.Body>
                             <Nav className='justify-content-end flex-grow-1 pe-3'>
-                                <Nav.Link as={NavLink} to='/products'>
+                                <Nav.Link as={NavLink} to='/'>
                                     Products
                                 </Nav.Link>
                                 {user.userId ? (
