@@ -296,7 +296,6 @@ function GridComplexExample() {
                 </div>
             </Form>
         </Container>
-        // </div>
     );
 }
 

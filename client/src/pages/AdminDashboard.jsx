@@ -278,7 +278,7 @@ const AdminDashboard = () => {
                 productName: products.find((p) => p._id === selectedProduct._id)
                     .productName,
                 productDescription: products.find((p) => p._id === selectedProduct._id)
-                    .productDescription, // replace with new value
+                    .productDescription,
                 stockCount: products.find((p) => p._id === selectedProduct._id)
                     .stockCount,
                 productPrice: products.find((p) => p._id === selectedProduct._id)

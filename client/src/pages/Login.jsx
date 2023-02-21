@@ -107,7 +107,6 @@ export default function Login() {
     }
 
     useEffect(() => {
-        // Validation to enable submit button when all fields are populated.
         setIsActive(email !== "" && password !== "");
     }, [email, password]);
 
