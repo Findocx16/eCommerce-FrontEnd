@@ -15,7 +15,12 @@ import ViewOrderHistory from "./components/ViewOrderHistory";
 import ViewOrderHistoryAdmin from "./components/ViewOrderHistoryAdmin";
 
 function App() {
-    const [user, setUser] = useState({ fullName: null, userId: null, isAdmin: null });
+    const [user, setUser] = useState({
+        fullName: null,
+        userId: null,
+        isAdmin: null,
+        email: null,
+    });
 
     const unsetUser = () => {
         localStorage.clear();
@@ -42,9 +47,15 @@ function App() {
                         fullName: `${data.user.firstName} ${data.user.lastName}`,
                         userId: data.user._id,
                         isAdmin: data.user.isAdmin,
+                        email: data.user.email,
                     });
                 } else {
-                    setUser({ fullName: null, userId: null, isAdmin: null });
+                    setUser({
+                        fullName: null,
+                        userId: null,
+                        isAdmin: null,
+                        email: null,
+                    });
                 }
             } catch (error) {
                 console.error("Error fetching user details:", error);

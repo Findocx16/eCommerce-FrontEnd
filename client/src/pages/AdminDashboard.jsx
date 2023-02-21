@@ -135,7 +135,7 @@ const AdminDashboard = () => {
             console.log(res);
             if (res.message) {
                 await Swal.fire({
-                    title: "Product archived",
+                    title: "Product unarchived",
                     icon: "success",
                     text: `Unarchived successfully`,
                 });
