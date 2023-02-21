@@ -64,10 +64,7 @@ function App() {
                             <Route path='/login' element={<Login />} />
                             <Route path='/logout' element={<Logout />} />
                             <Route path='/' element={<Products />} />
-                            <Route
-                                path='/products/:productId'
-                                element={<ProductDetails />}
-                            />
+                            <Route path=':productId' element={<ProductDetails />} />
                             <Route path='/register' element={<Register />} />
                             <Route path='/users/admin' element={<AdminDashboard />} />
                             <Route path='/users/cart' element={<ViewCart />} />
