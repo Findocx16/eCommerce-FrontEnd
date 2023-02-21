@@ -29,6 +29,20 @@ const ViewCart = () => {
     };
 
     useEffect(() => {
+        const dimmer = document.createElement("div");
+        dimmer.style =
+            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
+        const spinner = document.createElement("div");
+        spinner.innerHTML = `
+          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        `;
+        dimmer.appendChild(spinner);
+        document.body.appendChild(dimmer);
+
         fetch(`${process.env.REACT_APP_APP_URL}/users/orders`, {
             headers: {
                 "Content-Type": "application/json",
@@ -37,6 +51,7 @@ const ViewCart = () => {
         })
             .then((res) => res.json())
             .then((data) => {
+                document.body.removeChild(dimmer);
                 setCartTotal(data.orders.cartTotal);
                 setOrders(data.orders.orders);
             });
@@ -59,6 +74,20 @@ const ViewCart = () => {
         );
     }
     async function handleCheckout() {
+        const dimmer = document.createElement("div");
+        dimmer.style =
+            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
+        const spinner = document.createElement("div");
+        spinner.innerHTML = `
+          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        `;
+        dimmer.appendChild(spinner);
+        document.body.appendChild(dimmer);
+
         const result = await Swal.fire({
             title: "Are you sure you want to check-out all this product?",
             text: "You won't be able to revert this!",
@@ -83,13 +112,16 @@ const ViewCart = () => {
                 );
                 const data = await response.json();
                 if (response.ok) {
+                    document.body.removeChild(dimmer);
                     await Swal.fire({
                         icon: "success",
                         title: "Checkout successful",
                         text: data.message,
                     });
+
                     navigate("/users/checkout/history");
                 } else {
+                    document.body.removeChild(dimmer);
                     Swal.fire({
                         icon: "error",
                         title: "Checkout failed",
@@ -107,6 +139,19 @@ const ViewCart = () => {
         }
     }
     async function handleSave() {
+        const dimmer = document.createElement("div");
+        dimmer.style =
+            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
+        const spinner = document.createElement("div");
+        spinner.innerHTML = `
+          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        `;
+        dimmer.appendChild(spinner);
+        document.body.appendChild(dimmer);
         try {
             const res = await fetch(
                 `${process.env.REACT_APP_APP_URL}/products/orders/${selectedOrder._id}/product/${selectedProduct.productId}/updateQuantity`,
@@ -126,35 +171,42 @@ const ViewCart = () => {
             const data = await res.json();
             console.log(data);
             if (res.status === 200) {
+                document.body.removeChild(dimmer);
                 await Swal.fire({
                     icon: "success",
                     title: "Quantity updated",
                     text: data.message,
                 });
+
                 window.location.reload(false);
             } else if (res.status === 400) {
+                document.body.removeChild(dimmer);
                 Swal.fire({
                     icon: "error",
                     title: "Error",
                     text: data.message,
                 });
             } else if (res.status === 401) {
+                document.body.removeChild(dimmer);
                 Swal.fire({
                     icon: "warning",
                     title: "Unauthorized",
                     text: data.message,
                 });
             } else if (res.status === 404) {
+                document.body.removeChild(dimmer);
                 Swal.fire({
                     icon: "error",
                     title: "Not Found",
                     text: data.message,
                 });
             } else {
+                document.body.removeChild(dimmer);
                 throw new Error("An unknown error occurred");
             }
         } catch (error) {
             console.log(error);
+
             Swal.fire({
                 icon: "error",
                 title: "Error",
@@ -164,7 +216,20 @@ const ViewCart = () => {
     }
 
     const handleDelete = async (id) => {
-        console.log(orders);
+        const dimmer = document.createElement("div");
+        dimmer.style =
+            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
+        const spinner = document.createElement("div");
+        spinner.innerHTML = `
+          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        `;
+        dimmer.appendChild(spinner);
+        document.body.appendChild(dimmer);
+
         const result = await Swal.fire({
             title: "Are you sure you want to delete this order?",
             text: "You won't be able to revert this!",
@@ -194,14 +259,16 @@ const ViewCart = () => {
 
                     // Remove the order from the array
                     orders.splice(indexToDelete, 1);
-
+                    document.body.removeChild(dimmer);
                     await Swal.fire({
                         title: "Order deleted",
                         icon: "success",
                         text: res.message,
                     });
+
                     window.location.reload(false);
                 } else {
+                    document.body.removeChild(dimmer);
                     Swal.fire({
                         title: "Error",
                         icon: "error",
@@ -260,7 +327,7 @@ const ViewCart = () => {
                                                                     controlId='exampleForm.ControlInput1'
                                                                 >
                                                                     <Form.Label>
-                                                                        Product Price
+                                                                        Product Quantity
                                                                     </Form.Label>
                                                                     <Form.Control
                                                                         onChange={(e) =>
@@ -273,7 +340,7 @@ const ViewCart = () => {
                                                                             product.quantity
                                                                         }
                                                                         type='number'
-                                                                        placeholder='Price'
+                                                                        placeholder='Enter new quantity'
                                                                         autoFocus
                                                                     />
                                                                 </Form.Group>

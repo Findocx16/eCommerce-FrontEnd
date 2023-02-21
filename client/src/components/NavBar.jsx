@@ -23,23 +23,54 @@ function Navigationbar() {
     const handleShow = () => setShow(true);
 
     useEffect(() => {
+        const dimmer = document.createElement("div");
+        dimmer.style =
+            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
+        const spinner = document.createElement("div");
+        spinner.innerHTML = `
+              <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            `;
+        dimmer.appendChild(spinner);
+        document.body.appendChild(dimmer);
+
         fetch(`${process.env.REACT_APP_APP_URL}/products`)
             .then((res) => res.json())
             .then((data) => {
                 if (!data.activeProducts) {
                     setProducts([]);
+                    document.body.removeChild(dimmer);
                 } else {
                     setProducts(data.activeProducts);
+                    document.body.removeChild(dimmer);
                 }
             });
     }, []);
     function searchProducts(e) {
         e.preventDefault();
+        const dimmer = document.createElement("div");
+        dimmer.style =
+            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
+        const spinner = document.createElement("div");
+        spinner.innerHTML = `
+              <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            `;
+        dimmer.appendChild(spinner);
+        document.body.appendChild(dimmer);
+
         const product = products.find((p) =>
             p.productName.toLowerCase().includes(search.toLowerCase())
         );
 
         if (!product) {
+            document.body.removeChild(dimmer);
             Swal.fire({
                 title: "No such product found",
                 icon: "error",
@@ -47,14 +78,27 @@ function Navigationbar() {
             });
             setSearch("");
         } else {
+            document.body.removeChild(dimmer);
             navigate(`${product._id}`);
             setSearch("");
         }
     }
 
     const changePassword = async () => {
-        console.log(email);
-        console.log(user.email);
+        const dimmer = document.createElement("div");
+        dimmer.style =
+            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
+        const spinner = document.createElement("div");
+        spinner.innerHTML = `
+              <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            `;
+        dimmer.appendChild(spinner);
+        document.body.appendChild(dimmer);
+
         if (user.email === email) {
             try {
                 const res = await fetch(`${process.env.REACT_APP_APP_URL}/users/login`, {
@@ -84,6 +128,7 @@ function Navigationbar() {
 
                     if (res2.ok) {
                         const data = await res2.json();
+                        document.body.removeChild(dimmer);
                         Swal.fire({
                             icon: "success",
                             title: "Password updated successfully!",
@@ -95,6 +140,7 @@ function Navigationbar() {
                     }
                 }
                 if (res.status === 400) {
+                    document.body.removeChild(dimmer);
                     Swal.fire({
                         icon: "error",
                         title: "Password not match",
@@ -110,6 +156,7 @@ function Navigationbar() {
                 });
             }
         } else {
+            document.body.removeChild(dimmer);
             Swal.fire({
                 icon: "error",
                 title: "Email not match",

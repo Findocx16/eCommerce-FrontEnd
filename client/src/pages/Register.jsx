@@ -42,6 +42,19 @@ function GridComplexExample() {
         : [];
 
     const submitRegister = async (event) => {
+        const dimmer = document.createElement("div");
+        dimmer.style =
+            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
+        const spinner = document.createElement("div");
+        spinner.innerHTML = `
+          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        `;
+        dimmer.appendChild(spinner);
+        document.body.appendChild(dimmer);
         event.preventDefault();
 
         const requestOptions = {
@@ -72,21 +85,25 @@ function GridComplexExample() {
                 requestOptions
             );
             if (res.ok) {
+                document.body.removeChild(dimmer);
                 await Swal.fire({
                     title: "Successfully enrolled",
                     icon: "success",
                     text: "You have successfully registered",
                 });
+
                 navigate("/login");
             } else if (res.status === 401) {
-                Swal.fire({
+                document.body.removeChild(dimmer);
+                await Swal.fire({
                     title: "Duplicate email found",
                     icon: "error",
                     text: "This email address is already registered. Please use a different email address.",
                 });
             } else {
                 const errorMessage = await res.text();
-                Swal.fire({
+                document.body.removeChild(dimmer);
+                await Swal.fire({
                     title: "Something went wrong",
                     icon: "error",
                     text: errorMessage,
@@ -94,7 +111,7 @@ function GridComplexExample() {
             }
         } catch (error) {
             console.log(error);
-            Swal.fire({
+            await Swal.fire({
                 title: "Something went wrong",
                 icon: "error",
                 text: "Please try again.",

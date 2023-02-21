@@ -27,6 +27,20 @@ const ProductDetails = () => {
     }, [productId]);
 
     async function addToCart() {
+        const dimmer = document.createElement("div");
+        dimmer.style =
+            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
+        const spinner = document.createElement("div");
+        spinner.innerHTML = `
+          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        `;
+        dimmer.appendChild(spinner);
+        document.body.appendChild(dimmer);
+
         try {
             const res = await fetch(
                 `${process.env.REACT_APP_APP_URL}/products/${productId}/addtocart`,
@@ -43,6 +57,7 @@ const ProductDetails = () => {
             );
             const data = await res.json();
             if (res.status === 200) {
+                document.body.removeChild(dimmer);
                 await Swal.fire({
                     title: "Success!",
                     text: "Product added to cart.",
@@ -51,6 +66,7 @@ const ProductDetails = () => {
                 navigate("/");
             }
             if (res.status === 400) {
+                document.body.removeChild(dimmer);
                 Swal.fire({
                     title: "Error",
                     text: data.message,
@@ -58,6 +74,7 @@ const ProductDetails = () => {
                 });
             }
             if (res.status === 404) {
+                document.body.removeChild(dimmer);
                 Swal.fire({
                     title: "Not found 404",
                     text: data.message,

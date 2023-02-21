@@ -95,6 +95,19 @@ const AdminDashboard = () => {
         }
     }
     async function archive(id) {
+        const dimmer = document.createElement("div");
+        dimmer.style =
+            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
+        const spinner = document.createElement("div");
+        spinner.innerHTML = `
+          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        `;
+        dimmer.appendChild(spinner);
+        document.body.appendChild(dimmer);
         try {
             const updates = {
                 isActive: false,
@@ -103,29 +116,47 @@ const AdminDashboard = () => {
             const res = await updateProduct(id, updates);
             console.log(res);
             if (res.message) {
+                document.body.removeChild(dimmer);
                 await Swal.fire({
                     title: "Product archived",
                     icon: "success",
                     text: `Archived successfully`,
                 });
+
                 window.location.reload(false);
             } else {
-                Swal.fire({
+                document.body.removeChild(dimmer);
+                await Swal.fire({
                     title: "Error",
                     icon: "error",
                     text: "There was an error updating the product",
                 });
             }
         } catch (error) {
-            Swal.fire({
+            await Swal.fire({
                 title: "Error",
                 icon: "error",
                 text: error.message,
             });
+
             console.log(error);
         }
     }
     async function unArchive(id) {
+        const dimmer = document.createElement("div");
+        dimmer.style =
+            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
+        const spinner = document.createElement("div");
+        spinner.innerHTML = `
+          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        `;
+        dimmer.appendChild(spinner);
+        document.body.appendChild(dimmer);
+
         try {
             const updates = {
                 isActive: true,
@@ -134,13 +165,16 @@ const AdminDashboard = () => {
             const res = await updateProduct(id, updates);
             console.log(res);
             if (res.message) {
+                document.body.removeChild(dimmer);
                 await Swal.fire({
                     title: "Product unarchived",
                     icon: "success",
                     text: `Unarchived successfully`,
                 });
+
                 window.location.reload(false);
             } else {
+                document.body.removeChild(dimmer);
                 Swal.fire({
                     title: "Error",
                     icon: "error",
@@ -153,11 +187,25 @@ const AdminDashboard = () => {
                 icon: "error",
                 text: error.message,
             });
+
             console.log(error);
         }
     }
 
     async function handleAddAdmin() {
+        const dimmer = document.createElement("div");
+        dimmer.style =
+            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
+        const spinner = document.createElement("div");
+        spinner.innerHTML = `
+          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        `;
+        dimmer.appendChild(spinner);
+        document.body.appendChild(dimmer);
         try {
             const res = await fetch(
                 `${process.env.REACT_APP_APP_URL}/users/${idAdmin}/create/admin`,
@@ -170,28 +218,38 @@ const AdminDashboard = () => {
                 }
             );
             if (res.status === 200) {
+                document.body.removeChild(dimmer);
                 await Swal.fire("Success!", "Admin added successfully.", "success");
+
                 window.location.reload(false);
             } else if (res.status === 400) {
-                Swal.fire(
+                document.body.removeChild(dimmer);
+                await Swal.fire(
                     "Error!",
                     "Bad request. Please check your input and try again.",
                     "error"
                 );
             } else if (res.status === 401) {
-                Swal.fire(
+                document.body.removeChild(dimmer);
+                await Swal.fire(
                     "Error!",
                     "Unauthorized. Please log in and try again.",
                     "error"
                 );
             } else if (res.status === 404) {
-                Swal.fire(
+                document.body.removeChild(dimmer);
+                await Swal.fire(
                     "Error!",
                     "User not found. Please check your input and try again.",
                     "error"
                 );
             } else {
-                Swal.fire("Error!", "Something went wrong. Please try again.", "error");
+                document.body.removeChild(dimmer);
+                await Swal.fire(
+                    "Error!",
+                    "Something went wrong. Please try again.",
+                    "error"
+                );
             }
             console.log(res);
             return res.json();
@@ -201,6 +259,20 @@ const AdminDashboard = () => {
     }
 
     async function handleSave() {
+        const dimmer = document.createElement("div");
+        dimmer.style =
+            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
+        const spinner = document.createElement("div");
+        spinner.innerHTML = `
+          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        `;
+        dimmer.appendChild(spinner);
+        document.body.appendChild(dimmer);
+
         try {
             const updates = {
                 productName: products.find((p) => p._id === selectedProduct._id)
@@ -216,21 +288,24 @@ const AdminDashboard = () => {
             const res = await updateProduct(selectedProduct._id, updates);
             console.log(res);
             if (res.message) {
-                Swal.fire({
+                document.body.removeChild(dimmer);
+                await Swal.fire({
                     title: "Product updated",
                     icon: "success",
                     text: res.message,
                 });
+
                 setSelectedProduct(null);
             } else {
-                Swal.fire({
+                document.body.removeChild(dimmer);
+                await Swal.fire({
                     title: "Error",
                     icon: "error",
                     text: "There was an error updating the product",
                 });
             }
         } catch (error) {
-            Swal.fire({
+            await Swal.fire({
                 title: "Error",
                 icon: "error",
                 text: error.message,
@@ -239,6 +314,20 @@ const AdminDashboard = () => {
         }
     }
     const deleteProduct = async (id) => {
+        const dimmer = document.createElement("div");
+        dimmer.style =
+            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
+        const spinner = document.createElement("div");
+        spinner.innerHTML = `
+          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        `;
+        dimmer.appendChild(spinner);
+        document.body.appendChild(dimmer);
+
         const result = await Swal.fire({
             title: "Are you sure you want to delete this product?",
             text: "You won't be able to revert this!",
@@ -263,14 +352,17 @@ const AdminDashboard = () => {
                 );
 
                 if (res.ok) {
+                    document.body.removeChild(dimmer);
                     await Swal.fire({
                         title: "Product deleted",
                         icon: "success",
                         text: res.message,
                     });
+
                     window.location.reload(false);
                 } else {
-                    Swal.fire({
+                    document.body.removeChild(dimmer);
+                    await Swal.fire({
                         title: "Error",
                         icon: "error",
                         text: "There was an error updating the product",
@@ -283,6 +375,20 @@ const AdminDashboard = () => {
     };
 
     useEffect(() => {
+        const dimmer = document.createElement("div");
+        dimmer.style =
+            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
+        const spinner = document.createElement("div");
+        spinner.innerHTML = `
+          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        `;
+        dimmer.appendChild(spinner);
+        document.body.appendChild(dimmer);
+
         fetch(`${process.env.REACT_APP_APP_URL}/products/all`, {
             headers: {
                 "Content-Type": "application/json",
@@ -293,8 +399,10 @@ const AdminDashboard = () => {
             .then((data) => {
                 if (!data.product) {
                     setProducts([]);
+                    document.body.removeChild(dimmer);
                 } else {
                     setProducts(data.product);
+                    document.body.removeChild(dimmer);
                 }
             });
     }, []);

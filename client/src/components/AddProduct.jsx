@@ -10,7 +10,21 @@ export default function AddProduct() {
     const [productLink, setProductLink] = useState("");
 
     async function submitAddProduct() {
-        fetch(`${process.env.REACT_APP_APP_URL}/products/addproduct`, {
+        const dimmer = document.createElement("div");
+        dimmer.style =
+            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
+        const spinner = document.createElement("div");
+        spinner.innerHTML = `
+              <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            `;
+        dimmer.appendChild(spinner);
+        document.body.appendChild(dimmer);
+
+        await fetch(`${process.env.REACT_APP_APP_URL}/products/addproduct`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -27,27 +41,31 @@ export default function AddProduct() {
             .then(async (res) => {
                 console.log(res);
                 if (res.status === 200) {
+                    document.body.removeChild(dimmer);
                     await Swal.fire({
                         title: "Product added successfully",
                         icon: "success",
                     });
                     window.location.reload(false);
                 } else if (res.status === 400) {
+                    document.body.removeChild(dimmer);
                     const errorMessage = await res.json();
-                    Swal.fire({
+                    await Swal.fire({
                         title: "Error",
                         icon: "error",
                         text: errorMessage.message,
                     });
                 } else if (res.status === 401) {
-                    Swal.fire({
+                    document.body.removeChild(dimmer);
+                    await Swal.fire({
                         title: "User is not authorized",
                         icon: "error",
                         text: "Please log in as an admin to add a product",
                     });
                 } else {
+                    document.body.removeChild(dimmer);
                     const errorMessage = await res.text();
-                    Swal.fire({
+                    await Swal.fire({
                         title: "Something went wrong",
                         icon: "error",
                         text: errorMessage,

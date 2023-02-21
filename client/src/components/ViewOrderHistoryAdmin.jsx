@@ -8,6 +8,20 @@ const ViewOrderHistoryAdmin = () => {
     const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
+        const dimmer = document.createElement("div");
+        dimmer.style =
+            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
+        const spinner = document.createElement("div");
+        spinner.innerHTML = `
+          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        `;
+        dimmer.appendChild(spinner);
+        document.body.appendChild(dimmer);
+
         fetch(`${process.env.REACT_APP_APP_URL}/users/allorders`, {
             headers: {
                 "Content-type": "application/json",
@@ -16,6 +30,7 @@ const ViewOrderHistoryAdmin = () => {
         })
             .then((res) => res.json())
             .then((data) => {
+                document.body.removeChild(dimmer);
                 console.log(data);
                 setOrders(data.orders);
             });
