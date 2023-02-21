@@ -10,6 +10,9 @@ import ErrorPage from "./pages/ErrorPage";
 import NavBar from "./components/NavBar";
 import ProductDetails from "./components/ProductDetails";
 import AdminDashboard from "./pages/AdminDashboard";
+import ViewCart from "./components/ViewCart";
+import ViewOrderHistory from "./components/ViewOrderHistory";
+import ViewOrderHistoryAdmin from "./components/ViewOrderHistoryAdmin";
 
 function App() {
     const [user, setUser] = useState({ fullName: null, userId: null, isAdmin: null });
@@ -50,7 +53,7 @@ function App() {
 
         fetchUserData();
     }, []);
-    console.log(user);
+
     return (
         <>
             <UserProvider value={{ user, setUser, unsetUser }}>
@@ -65,9 +68,17 @@ function App() {
                                 path='/products/:productId'
                                 element={<ProductDetails />}
                             />
-
                             <Route path='/register' element={<Register />} />
                             <Route path='/users/admin' element={<AdminDashboard />} />
+                            <Route path='/users/cart' element={<ViewCart />} />
+                            <Route
+                                path='/users/checkout/history'
+                                element={<ViewOrderHistory />}
+                            />{" "}
+                            <Route
+                                path='/users/admin/orders/all'
+                                element={<ViewOrderHistoryAdmin />}
+                            />
                             <Route path='/*' element={<ErrorPage />} />
                         </Routes>
                     </Container>

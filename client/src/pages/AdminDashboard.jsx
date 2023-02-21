@@ -1,21 +1,23 @@
-import Table from "react-bootstrap/Table";
 import { useEffect, useState } from "react";
-import Button from "react-bootstrap/Button";
+import { Button, Form, Table, Modal } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import userContext from "../UserContext";
-import { useContext } from "react";
 import AddProduct from "../components/AddProduct";
 
-const PAGE_SIZE_MANY = 10;
-const PAGE_SIZE_FEW = 5;
+const PAGE_SIZE_MANY = 4;
+const PAGE_SIZE_FEW = 1;
 
 const AdminDashboard = () => {
-    const { user } = useContext(userContext);
+    const navigate = useNavigate();
     const [products, setProducts] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
     const [selectedProduct, setSelectedProduct] = useState(null);
-    const [addProduct, setAddProduct] = useState(false);
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+    const [idAdmin, setIdAdmin] = useState("");
 
+    const [addProduct, setAddProduct] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
     const totalPages = Math.ceil(
         products.length / (!addProduct ? PAGE_SIZE_MANY : PAGE_SIZE_FEW)
     );
@@ -25,6 +27,12 @@ const AdminDashboard = () => {
 
     const handlePageClick = (page) => {
         setCurrentPage(page);
+    };
+
+    const [showTextField, setShowTextField] = useState(false);
+
+    const handleToggleTextField = () => {
+        setShowTextField(!showTextField);
     };
 
     function updateProductName(product, event) {
@@ -73,7 +81,6 @@ const AdminDashboard = () => {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                    "X-Is-Admin": user.isAdmin ? "true" : "false",
                 },
                 body: JSON.stringify(updates),
             }
@@ -146,6 +153,49 @@ const AdminDashboard = () => {
                 icon: "error",
                 text: error.message,
             });
+            console.log(error);
+        }
+    }
+
+    async function handleAddAdmin() {
+        try {
+            const res = await fetch(
+                `${process.env.REACT_APP_APP_URL}/users/${idAdmin}/create/admin`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Context-type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                }
+            );
+            if (res.status === 200) {
+                await Swal.fire("Success!", "Admin added successfully.", "success");
+                window.location.reload(false);
+            } else if (res.status === 400) {
+                Swal.fire(
+                    "Error!",
+                    "Bad request. Please check your input and try again.",
+                    "error"
+                );
+            } else if (res.status === 401) {
+                Swal.fire(
+                    "Error!",
+                    "Unauthorized. Please log in and try again.",
+                    "error"
+                );
+            } else if (res.status === 404) {
+                Swal.fire(
+                    "Error!",
+                    "User not found. Please check your input and try again.",
+                    "error"
+                );
+            } else {
+                Swal.fire("Error!", "Something went wrong. Please try again.", "error");
+            }
+            console.log(res);
+            return res.json();
+        } catch (error) {
             console.log(error);
         }
     }
@@ -241,7 +291,11 @@ const AdminDashboard = () => {
         })
             .then((res) => res.json())
             .then((data) => {
-                setProducts(data.product);
+                if (!data.product) {
+                    setProducts([]);
+                } else {
+                    setProducts(data.product);
+                }
             });
     }, []);
 
@@ -258,8 +312,9 @@ const AdminDashboard = () => {
             <h1 style={{ marginTop: "3vh" }} className='text-center'>
                 User Admin Dashboard
             </h1>
+
             <Table striped bordered hover style={{ marginTop: "5vh" }}>
-                <thead>
+                <thead className='bg-primary text-light'>
                     <tr className='text-center'>
                         <th>#</th>
                         <th>Name</th>
@@ -268,113 +323,235 @@ const AdminDashboard = () => {
                         <th>Price</th>
                         <th>Status</th>
                         <th>Listed on</th>
-                        <th>Action</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {currentProducts.map((product, index) => (
-                        <tr key={product._id}>
-                            {selectedProduct && selectedProduct._id === product._id ? (
-                                <>
-                                    <td>
-                                        <input
-                                            value={product.productName}
-                                            onChange={(e) =>
-                                                updateProductName(product, e)
-                                            }
-                                        />
-                                    </td>
-                                    <td>
-                                        <input
-                                            type='text'
-                                            value={product.productDescription}
-                                            onChange={(e) =>
-                                                updateProductDescription(product, e)
-                                            }
-                                        />
-                                    </td>
-                                    <td>
-                                        <input
-                                            type='number'
-                                            value={product.stockCount}
-                                            onChange={(e) => updateStockCount(product, e)}
-                                        />
-                                    </td>
-                                    <td>
-                                        <input
-                                            value={product.productPrice}
-                                            onChange={(e) =>
-                                                updateProductPrice(product, e)
-                                            }
-                                        />
-                                    </td>
-                                    <td style={{ textAlign: "center" }}>
-                                        <Button
-                                            onClick={handleSave}
-                                            variant='outline-success'
-                                        >
-                                            Save
-                                        </Button>
-                                    </td>
+                    {!currentProducts.length ? (
+                        <>
+                            <tr>
+                                <td className='text-center' colSpan={8}>
+                                    NO PRODUCT FOUND
+                                </td>
+                            </tr>
+                        </>
+                    ) : (
+                        <>
+                            {currentProducts.map((product, index) => (
+                                <tr key={product._id}>
+                                    {selectedProduct &&
+                                    selectedProduct._id === product._id ? (
+                                        <>
+                                            <Modal show={show} onHide={handleClose}>
+                                                <Modal.Header
+                                                    closeButton
+                                                    onClick={() => {
+                                                        setSelectedProduct(null);
+                                                    }}
+                                                >
+                                                    <Modal.Title>
+                                                        {product.productName}
+                                                    </Modal.Title>
+                                                </Modal.Header>
+                                                <Modal.Body>
+                                                    <Form>
+                                                        <Form.Group
+                                                            className='mb-3'
+                                                            controlId='exampleForm.ControlInput1'
+                                                        >
+                                                            <Form.Label>
+                                                                Product Name
+                                                            </Form.Label>
+                                                            <Form.Control
+                                                                onChange={(e) =>
+                                                                    updateProductName(
+                                                                        product,
+                                                                        e
+                                                                    )
+                                                                }
+                                                                value={
+                                                                    product.productName
+                                                                }
+                                                                type='text'
+                                                                placeholder='Name'
+                                                                autoFocus
+                                                            />
+                                                        </Form.Group>
 
-                                    <td style={{ textAlign: "center" }}>
-                                        <Button
-                                            variant='outline-secondary'
-                                            style={{ marginLeft: "10px" }}
-                                            onClick={() => setSelectedProduct(null)}
-                                        >
-                                            Cancel
-                                        </Button>
-                                    </td>
-                                </>
-                            ) : (
-                                <>
-                                    <td>{start + index + 1}</td>
-                                    <td>{product.productName}</td>
-                                    <td>{product.productDescription}</td>
-                                    <td>{product.stockCount}</td>
-                                    <td>Php {product.productPrice}</td>
-                                    <td style={{ textAlign: "center" }}>
-                                        {product.isActive ? "Available" : "Unavailable"}
-                                    </td>
-                                    <td>
-                                        {new Date(product.createdOn).toLocaleString()}
-                                    </td>
-                                    <td style={{ textAlign: "center" }}>
-                                        <Button
-                                            variant='outline-primary'
-                                            style={{ marginRight: "10px" }}
-                                            onClick={() => setSelectedProduct(product)}
-                                        >
-                                            Update
-                                        </Button>
-                                        <Button
-                                            style={{ marginRight: "10px" }}
-                                            onClick={() => deleteProduct(product._id)}
-                                            variant='outline-danger'
-                                        >
-                                            Delete
-                                        </Button>
-                                        {product.isActive ? (
-                                            <Button
-                                                onClick={() => archive(product._id)}
-                                                variant='outline-primary'
+                                                        <Form.Group
+                                                            className='mb-3'
+                                                            controlId='exampleForm.ControlInput1'
+                                                        >
+                                                            <Form.Label>
+                                                                Product Stock
+                                                            </Form.Label>
+                                                            <Form.Control
+                                                                onChange={(e) =>
+                                                                    updateStockCount(
+                                                                        product,
+                                                                        e
+                                                                    )
+                                                                }
+                                                                value={product.stockCount}
+                                                                type='number'
+                                                                placeholder='Stock'
+                                                                autoFocus
+                                                            />
+                                                        </Form.Group>
+                                                        <Form.Group
+                                                            className='mb-3'
+                                                            controlId='exampleForm.ControlInput1'
+                                                        >
+                                                            <Form.Label>
+                                                                Product Price
+                                                            </Form.Label>
+                                                            <Form.Control
+                                                                onChange={(e) =>
+                                                                    updateProductPrice(
+                                                                        product,
+                                                                        e
+                                                                    )
+                                                                }
+                                                                value={
+                                                                    product.productPrice
+                                                                }
+                                                                type='number'
+                                                                placeholder='Price'
+                                                                autoFocus
+                                                            />
+                                                        </Form.Group>
+                                                        <Form.Group
+                                                            className='mb-3'
+                                                            controlId='exampleForm.ControlTextarea1'
+                                                        >
+                                                            <Form.Label>
+                                                                Product Description
+                                                            </Form.Label>
+                                                            <Form.Control
+                                                                onChange={(e) =>
+                                                                    updateProductDescription(
+                                                                        product,
+                                                                        e
+                                                                    )
+                                                                }
+                                                                value={
+                                                                    product.productDescription
+                                                                }
+                                                                placeholder='Description'
+                                                                as='textarea'
+                                                                rows={3}
+                                                            />
+                                                        </Form.Group>
+                                                    </Form>
+                                                </Modal.Body>
+                                                <Modal.Footer>
+                                                    <Button
+                                                        variant='secondary'
+                                                        onClick={() => {
+                                                            setSelectedProduct(null);
+                                                            handleClose();
+                                                        }}
+                                                    >
+                                                        Close
+                                                    </Button>
+                                                    <Button
+                                                        variant='primary'
+                                                        onClick={() => {
+                                                            handleClose();
+                                                            handleSave();
+                                                        }}
+                                                    >
+                                                        Save Changes
+                                                    </Button>
+                                                </Modal.Footer>
+                                            </Modal>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <td>{start + index + 1}</td>
+                                            <td>{product.productName}</td>
+                                            <td>{product.productDescription}</td>
+                                            <td>{product.stockCount}</td>
+                                            <td>Php {product.productPrice}</td>
+                                            <td style={{ textAlign: "center" }}>
+                                                {product.isActive
+                                                    ? "Available"
+                                                    : "Unavailable"}
+                                            </td>
+                                            <td>
+                                                {new Date(
+                                                    product.createdOn
+                                                ).toLocaleString()}
+                                            </td>
+                                            <td
+                                                style={{
+                                                    display: "flex",
+                                                    textAlign: "center",
+                                                    flexDirection: "column",
+                                                    justifyContent: "center",
+                                                    alignItems: "center",
+                                                    paddingBottom: "20px",
+                                                }}
                                             >
-                                                Archive
-                                            </Button>
-                                        ) : (
-                                            <Button
-                                                onClick={() => unArchive(product._id)}
-                                                variant='outline-warning'
-                                            >
-                                                Unarchive
-                                            </Button>
-                                        )}
-                                    </td>
-                                </>
-                            )}
-                        </tr>
-                    ))}
+                                                <Button
+                                                    variant='outline-primary'
+                                                    style={{
+                                                        marginBottom: "10px",
+                                                        width: "120px",
+                                                    }}
+                                                    onClick={() => {
+                                                        setSelectedProduct(product);
+                                                        handleShow();
+                                                    }}
+                                                >
+                                                    Update
+                                                </Button>
+                                                <Button
+                                                    style={{
+                                                        marginBottom: "10px",
+                                                        width: "120px",
+                                                    }}
+                                                    onClick={() =>
+                                                        deleteProduct(product._id)
+                                                    }
+                                                    variant='outline-danger'
+                                                >
+                                                    Delete
+                                                </Button>
+                                                {product.isActive ? (
+                                                    <Button
+                                                        style={{
+                                                            marginBottom: "10px",
+                                                            width: "120px",
+                                                        }}
+                                                        onClick={() =>
+                                                            archive(product._id)
+                                                        }
+                                                        variant='outline-primary'
+                                                    >
+                                                        Archive
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        style={{
+                                                            marginBottom: "10px",
+                                                            width: "120px",
+                                                        }}
+                                                        onClick={() =>
+                                                            unArchive(product._id)
+                                                        }
+                                                        variant='outline-warning'
+                                                    >
+                                                        Unarchive
+                                                    </Button>
+                                                )}
+                                            </td>
+                                        </>
+                                    )}
+                                </tr>
+                            ))}
+                        </>
+                    )}
                 </tbody>
             </Table>
             <nav style={{ display: "flex", justifyContent: "center" }}>
@@ -394,14 +571,50 @@ const AdminDashboard = () => {
                             </button>
                         </li>
                     ))}
+                    <div>
+                        <Button
+                            variant={showTextField ? "danger" : "warning"}
+                            style={{ marginLeft: "10px" }}
+                            onClick={handleToggleTextField}
+                        >
+                            {showTextField ? "Cancel" : "ADD ADMIN"}
+                        </Button>
+                    </div>
+
+                    {showTextField && (
+                        <>
+                            <Form.Control
+                                type='text'
+                                placeholder='User ID'
+                                onChange={(e) => setIdAdmin(e.target.value)}
+                                style={{ marginLeft: "10px" }}
+                            />
+
+                            <Button
+                                onClick={(e) => handleAddAdmin(e)}
+                                variant='success'
+                                style={{ marginLeft: "10px" }}
+                            >
+                                Save
+                            </Button>
+                        </>
+                    )}
                 </ul>
-                <Button
-                    onClick={(e) => addProductButton(e)}
-                    variant={!addProduct ? "primary" : "warning"}
-                    style={{ marginLeft: "auto" }}
-                >
-                    {!addProduct ? "Add product" : "Close form"}
-                </Button>
+
+                <div style={{ marginLeft: "auto" }}>
+                    <Button
+                        onClick={() => navigate("/users/admin/orders/all")}
+                        style={{ marginRight: "5px" }}
+                    >
+                        ORDER HISTORY
+                    </Button>
+                    <Button
+                        onClick={(e) => addProductButton(e)}
+                        variant={!addProduct ? "primary" : "warning"}
+                    >
+                        {!addProduct ? "Add product" : "Close form"}
+                    </Button>
+                </div>
             </nav>
 
             {!addProduct ? "" : <AddProduct />}

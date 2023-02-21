@@ -17,14 +17,19 @@ function Navigationbar() {
         fetch(`${process.env.REACT_APP_APP_URL}/products`)
             .then((res) => res.json())
             .then((data) => {
-                setProducts(data.activeProducts);
+                if (!data.activeProducts) {
+                    setProducts([]);
+                } else {
+                    setProducts(data.activeProducts);
+                }
             });
     }, []);
     function searchProducts(e) {
         e.preventDefault();
-        const product = products.find(
-            (p) => p.productName.toLowerCase() === search.toLowerCase()
+        const product = products.find((p) =>
+            p.productName.toLowerCase().includes(search.toLowerCase())
         );
+
         if (!product) {
             Swal.fire({
                 title: "No such product found",
@@ -43,7 +48,7 @@ function Navigationbar() {
             <Navbar key={"md"} bg='light' expand={"md"} className='mb-3'>
                 <Container fluid>
                     <Navbar.Brand as={Link} to='/products'>
-                        EJAY
+                        EJAY SHOPPING CENTER
                     </Navbar.Brand>
                     {user.isAdmin ? (
                         <Button variant='outline-danger' as={NavLink} to='/users/admin'>

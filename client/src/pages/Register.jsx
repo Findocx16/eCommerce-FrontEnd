@@ -12,7 +12,12 @@ function GridComplexExample() {
 
     useEffect(() => {
         if (user.userId) {
-            navigate("/courses");
+            Swal.fire({
+                title: "User is currently login",
+                icon: "error",
+                text: "Please logout to use another account",
+            });
+            navigate("/products");
         }
     });
 

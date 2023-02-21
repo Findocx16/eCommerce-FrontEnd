@@ -1,10 +1,11 @@
 import userContext from "../UserContext";
 import { useContext, useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Container, Card, Button, Row, Col, Form } from "react-bootstrap";
 import Swal from "sweetalert2";
 
 const ProductDetails = () => {
+    const navigate = useNavigate();
     const { user } = useContext(userContext);
     const { productId } = useParams();
     const [products, setProducts] = useState("");
@@ -42,11 +43,12 @@ const ProductDetails = () => {
             );
             const data = await res.json();
             if (res.status === 200) {
-                Swal.fire({
+                await Swal.fire({
                     title: "Success!",
                     text: "Product added to cart.",
                     icon: "success",
                 });
+                navigate("/products");
             }
             if (res.status === 400) {
                 Swal.fire({
@@ -82,11 +84,8 @@ const ProductDetails = () => {
                                 {products.productName}
                             </Card.Header>
                             <div className='row'>
-                                <div className='col-md-6'>
-                                    <Card.Img
-                                        variant='top'
-                                        src='https://drive.google.com/uc?id=1AffvkxJLC3MMuJPL6D_UoJ2oUKLtfED5'
-                                    />
+                                <div className='col-md-6 mt-5'>
+                                    <Card.Img variant='top' src={products.productImage} />
                                 </div>
                                 <div className='col-md-6 mt-3'>
                                     <Card.Text>
