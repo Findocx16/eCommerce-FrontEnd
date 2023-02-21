@@ -38,7 +38,7 @@ function Navigationbar() {
             });
             setSearch("");
         } else {
-            navigate(`products/${product._id}`);
+            navigate(`${product._id}`);
             setSearch("");
         }
     }
