@@ -53,6 +53,8 @@ function Navigationbar() {
     }
 
     const changePassword = async () => {
+        console.log(email);
+        console.log(user.email);
         if (user.email === email) {
             try {
                 const res = await fetch(`${process.env.REACT_APP_APP_URL}/users/login`, {
