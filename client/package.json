@@ -1,6 +1,6 @@
 {
   "name": "client",
-  "homepage": "http://localhost:3001/products",
+  "homepage": "https://s59-s63-black.vercel.app/products",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
