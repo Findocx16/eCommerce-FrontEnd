@@ -325,8 +325,6 @@ const AdminDashboard = () => {
             </div>
           </div>
         `;
-        dimmer.appendChild(spinner);
-        document.body.appendChild(dimmer);
 
         const result = await Swal.fire({
             title: "Are you sure you want to delete this product?",
@@ -339,6 +337,8 @@ const AdminDashboard = () => {
         });
 
         if (result.isConfirmed) {
+            dimmer.appendChild(spinner);
+            document.body.appendChild(dimmer);
             try {
                 const res = await fetch(
                     `${process.env.REACT_APP_APP_URL}/products/${id}/delete`,

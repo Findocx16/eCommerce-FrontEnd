@@ -227,8 +227,6 @@ const ViewCart = () => {
             </div>
           </div>
         `;
-        dimmer.appendChild(spinner);
-        document.body.appendChild(dimmer);
 
         const result = await Swal.fire({
             title: "Are you sure you want to delete this order?",
@@ -241,6 +239,8 @@ const ViewCart = () => {
         });
 
         if (result.isConfirmed) {
+            dimmer.appendChild(spinner);
+            document.body.appendChild(dimmer);
             try {
                 const res = await fetch(
                     `${process.env.REACT_APP_APP_URL}/users/orders/${id}/remove`,
@@ -254,10 +254,8 @@ const ViewCart = () => {
                 );
 
                 if (res.ok) {
-                    // Find the index of the order to delete
                     const indexToDelete = orders.findIndex((order) => order._id === id);
 
-                    // Remove the order from the array
                     orders.splice(indexToDelete, 1);
                     document.body.removeChild(dimmer);
                     await Swal.fire({
