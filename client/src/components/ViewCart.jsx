@@ -85,8 +85,6 @@ const ViewCart = () => {
             </div>
           </div>
         `;
-        dimmer.appendChild(spinner);
-        document.body.appendChild(dimmer);
 
         const result = await Swal.fire({
             title: "Are you sure you want to check-out all this product?",
@@ -99,6 +97,8 @@ const ViewCart = () => {
         });
 
         if (result.isConfirmed) {
+            dimmer.appendChild(spinner);
+            document.body.appendChild(dimmer);
             try {
                 const response = await fetch(
                     `${process.env.REACT_APP_APP_URL}/users/checkout`,
