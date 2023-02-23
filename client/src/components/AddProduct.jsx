@@ -1,8 +1,10 @@
 import Swal from "sweetalert2";
 import { Button, Form, Col, Row } from "react-bootstrap";
 import { useState } from "react";
+import createSpinner from "./Spinner";
 
 export default function AddProduct() {
+    const dimmer = createSpinner();
     const [productName, setProductName] = useState("");
     const [productDescription, setProductDescription] = useState("");
     const [productStock, setProductStock] = useState("");
@@ -10,20 +12,7 @@ export default function AddProduct() {
     const [productLink, setProductLink] = useState("");
 
     async function submitAddProduct() {
-        const dimmer = document.createElement("div");
-        dimmer.style =
-            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
-        const spinner = document.createElement("div");
-        spinner.innerHTML = `
-              <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                <div class="spinner-border" role="status">
-                  <span class="visually-hidden">Loading...</span>
-                </div>
-              </div>
-            `;
-        dimmer.appendChild(spinner);
         document.body.appendChild(dimmer);
-
         await fetch(`${process.env.REACT_APP_APP_URL}/products/addproduct`, {
             method: "POST",
             headers: {

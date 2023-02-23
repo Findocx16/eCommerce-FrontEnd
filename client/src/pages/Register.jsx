@@ -2,11 +2,12 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import province from "../data/AddressData";
 import { useState, useEffect, useContext } from "react";
 import userContext from "../UserContext";
-
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import createSpinner from "../components/Spinner";
 
 function GridComplexExample() {
+    const dimmer = createSpinner();
     const navigate = useNavigate();
     const { user } = useContext(userContext);
 
@@ -42,18 +43,6 @@ function GridComplexExample() {
         : [];
 
     const submitRegister = async (event) => {
-        const dimmer = document.createElement("div");
-        dimmer.style =
-            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
-        const spinner = document.createElement("div");
-        spinner.innerHTML = `
-          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        `;
-        dimmer.appendChild(spinner);
         document.body.appendChild(dimmer);
         event.preventDefault();
 

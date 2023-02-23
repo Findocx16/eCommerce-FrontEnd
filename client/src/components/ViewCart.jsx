@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import userContext from "../UserContext";
 import { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import createSpinner from "./Spinner";
 
 const PAGE_SIZE_MANY = 10;
 
 const ViewCart = () => {
+    const dimmer = createSpinner();
     const navigate = useNavigate();
     const { user } = useContext(userContext);
     const [orders, setOrders] = useState([]);
@@ -29,18 +31,6 @@ const ViewCart = () => {
     };
 
     useEffect(() => {
-        const dimmer = document.createElement("div");
-        dimmer.style =
-            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
-        const spinner = document.createElement("div");
-        spinner.innerHTML = `
-          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        `;
-        dimmer.appendChild(spinner);
         document.body.appendChild(dimmer);
 
         fetch(`${process.env.REACT_APP_APP_URL}/users/orders`, {
@@ -74,18 +64,6 @@ const ViewCart = () => {
         );
     }
     async function handleCheckout() {
-        const dimmer = document.createElement("div");
-        dimmer.style =
-            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
-        const spinner = document.createElement("div");
-        spinner.innerHTML = `
-          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        `;
-
         const result = await Swal.fire({
             title: "Are you sure you want to check-out all this product?",
             text: "You won't be able to revert this!",
@@ -139,18 +117,6 @@ const ViewCart = () => {
         }
     }
     async function handleSave() {
-        const dimmer = document.createElement("div");
-        dimmer.style =
-            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
-        const spinner = document.createElement("div");
-        spinner.innerHTML = `
-          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        `;
-        dimmer.appendChild(spinner);
         document.body.appendChild(dimmer);
         try {
             const res = await fetch(
@@ -216,18 +182,6 @@ const ViewCart = () => {
     }
 
     const handleDelete = async (id) => {
-        const dimmer = document.createElement("div");
-        dimmer.style =
-            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
-        const spinner = document.createElement("div");
-        spinner.innerHTML = `
-          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        `;
-
         const result = await Swal.fire({
             title: "Are you sure you want to delete this order?",
             text: "You won't be able to revert this!",

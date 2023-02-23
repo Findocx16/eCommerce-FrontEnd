@@ -7,8 +7,10 @@ import Swal from "sweetalert2";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
 import { BsSearch } from "react-icons/bs";
+import createSpinner from "./Spinner";
 
 function Navigationbar() {
+    const dimmer = createSpinner();
     const navigate = useNavigate();
     const { user } = useContext(userContext);
     const [search, setSearch] = useState("");
@@ -23,20 +25,7 @@ function Navigationbar() {
     const handleShow = () => setShow(true);
 
     useEffect(() => {
-        const dimmer = document.createElement("div");
-        dimmer.style =
-            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
-        const spinner = document.createElement("div");
-        spinner.innerHTML = `
-              <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                <div class="spinner-border" role="status">
-                  <span class="visually-hidden">Loading...</span>
-                </div>
-              </div>
-            `;
-        dimmer.appendChild(spinner);
         document.body.appendChild(dimmer);
-
         fetch(`${process.env.REACT_APP_APP_URL}/products`)
             .then((res) => res.json())
             .then((data) => {
@@ -49,20 +38,9 @@ function Navigationbar() {
                 }
             });
     }, []);
+
     function searchProducts(e) {
         e.preventDefault();
-        const dimmer = document.createElement("div");
-        dimmer.style =
-            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
-        const spinner = document.createElement("div");
-        spinner.innerHTML = `
-              <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                <div class="spinner-border" role="status">
-                  <span class="visually-hidden">Loading...</span>
-                </div>
-              </div>
-            `;
-        dimmer.appendChild(spinner);
         document.body.appendChild(dimmer);
 
         const product = products.find((p) =>
@@ -85,18 +63,6 @@ function Navigationbar() {
     }
 
     const changePassword = async () => {
-        const dimmer = document.createElement("div");
-        dimmer.style =
-            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
-        const spinner = document.createElement("div");
-        spinner.innerHTML = `
-              <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                <div class="spinner-border" role="status">
-                  <span class="visually-hidden">Loading...</span>
-                </div>
-              </div>
-            `;
-        dimmer.appendChild(spinner);
         document.body.appendChild(dimmer);
 
         if (user.email === email) {

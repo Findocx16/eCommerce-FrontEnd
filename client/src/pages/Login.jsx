@@ -4,11 +4,12 @@ import { Form, Button, Container } from "react-bootstrap";
 import { Navigate, Link, useNavigate } from "react-router-dom";
 import userContext from "../UserContext";
 import Swal from "sweetalert2";
+import createSpinner from "../components/Spinner";
 
 export default function Login() {
+    const dimmer = createSpinner();
     const navigate = useNavigate();
     const { user, setUser } = useContext(userContext);
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isActive, setIsActive] = useState(false);
@@ -16,18 +17,6 @@ export default function Login() {
 
     async function authenticate(e) {
         e.preventDefault();
-        const dimmer = document.createElement("div");
-        dimmer.style =
-            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
-        const spinner = document.createElement("div");
-        spinner.innerHTML = `
-          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        `;
-        dimmer.appendChild(spinner);
         document.body.appendChild(dimmer);
         try {
             const res = await fetch(`${process.env.REACT_APP_APP_URL}/users/login`, {

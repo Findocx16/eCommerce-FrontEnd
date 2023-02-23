@@ -3,11 +3,13 @@ import { Button, Form, Table, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import AddProduct from "../components/AddProduct";
+import createSpinner from "../components/Spinner";
 
 const PAGE_SIZE_MANY = 4;
 const PAGE_SIZE_FEW = 1;
 
 const AdminDashboard = () => {
+    const dimmer = createSpinner();
     const navigate = useNavigate();
     const [products, setProducts] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null);
@@ -95,18 +97,6 @@ const AdminDashboard = () => {
         }
     }
     async function archive(id) {
-        const dimmer = document.createElement("div");
-        dimmer.style =
-            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
-        const spinner = document.createElement("div");
-        spinner.innerHTML = `
-          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        `;
-        dimmer.appendChild(spinner);
         document.body.appendChild(dimmer);
         try {
             const updates = {
@@ -143,18 +133,6 @@ const AdminDashboard = () => {
         }
     }
     async function unArchive(id) {
-        const dimmer = document.createElement("div");
-        dimmer.style =
-            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
-        const spinner = document.createElement("div");
-        spinner.innerHTML = `
-          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        `;
-        dimmer.appendChild(spinner);
         document.body.appendChild(dimmer);
 
         try {
@@ -193,18 +171,6 @@ const AdminDashboard = () => {
     }
 
     async function handleAddAdmin() {
-        const dimmer = document.createElement("div");
-        dimmer.style =
-            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
-        const spinner = document.createElement("div");
-        spinner.innerHTML = `
-          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        `;
-        dimmer.appendChild(spinner);
         document.body.appendChild(dimmer);
         try {
             const res = await fetch(
@@ -259,18 +225,6 @@ const AdminDashboard = () => {
     }
 
     async function handleSave() {
-        const dimmer = document.createElement("div");
-        dimmer.style =
-            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
-        const spinner = document.createElement("div");
-        spinner.innerHTML = `
-          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        `;
-        dimmer.appendChild(spinner);
         document.body.appendChild(dimmer);
 
         try {
@@ -314,18 +268,6 @@ const AdminDashboard = () => {
         }
     }
     const deleteProduct = async (id) => {
-        const dimmer = document.createElement("div");
-        dimmer.style =
-            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
-        const spinner = document.createElement("div");
-        spinner.innerHTML = `
-          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        `;
-
         const result = await Swal.fire({
             title: "Are you sure you want to delete this product?",
             text: "You won't be able to revert this!",
@@ -375,18 +317,6 @@ const AdminDashboard = () => {
     };
 
     useEffect(() => {
-        const dimmer = document.createElement("div");
-        dimmer.style =
-            "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999;";
-        const spinner = document.createElement("div");
-        spinner.innerHTML = `
-          <div class="d-flex justify-content-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        `;
-        dimmer.appendChild(spinner);
         document.body.appendChild(dimmer);
 
         fetch(`${process.env.REACT_APP_APP_URL}/products/all`, {
