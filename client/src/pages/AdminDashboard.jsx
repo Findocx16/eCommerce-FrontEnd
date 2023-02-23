@@ -279,7 +279,6 @@ const AdminDashboard = () => {
         });
 
         if (result.isConfirmed) {
-            dimmer.appendChild(spinner);
             document.body.appendChild(dimmer);
             try {
                 const res = await fetch(

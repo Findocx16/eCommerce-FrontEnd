@@ -75,7 +75,6 @@ const ViewCart = () => {
         });
 
         if (result.isConfirmed) {
-            dimmer.appendChild(spinner);
             document.body.appendChild(dimmer);
             try {
                 const response = await fetch(
@@ -193,7 +192,6 @@ const ViewCart = () => {
         });
 
         if (result.isConfirmed) {
-            dimmer.appendChild(spinner);
             document.body.appendChild(dimmer);
             try {
                 const res = await fetch(
